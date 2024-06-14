@@ -20,7 +20,7 @@ namespace ariel
             std::string name;
             int points;
             int myturn;
-            int id;
+            static int id;
             std::map<std::string, int> resources;
             std::vector<DevelopmentCard>  developmentCards;
 
@@ -39,7 +39,7 @@ namespace ariel
             std::vector<DevelopmentCard>& get_developmentCards();
             int get_points() const;
             void add_points(int points);
-            int get_id() const;
+            static int get_id() ;
             void set_id(int id) ;
 
             std::string print() const;
@@ -55,6 +55,7 @@ namespace ariel
 
             void buyRoad(int x1,int y1, int x2, int y2) ;
             void placeRoad(int x1,int y1, int x2, int y2) ;
+            static void isYourTurn() ;
 
             void printPoints() ;
             bool canAffordAndBuy(std::map<std::string, int>& resources,  std::map<std::string, int>& price);
@@ -63,7 +64,13 @@ namespace ariel
             void increaseResources(std::map<std::string , int>& res);
             void addResources(std::string res, int amount);
             void removeResources(std::string res, int amount);
-            
+            void useKnight();
+            void useTwoFreeRoads(Road r1,Road r2);
+            void useYearOfPlenty(std::string res1,std::string res2);
+            void useMonopoly(std::string res);
+
+
+
 
 
 

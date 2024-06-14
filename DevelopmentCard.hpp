@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "catan.hpp"
 #ifndef DEVELOPMENTCARD_HPP
 #define DEVELOPMENTCARD_HPP
 
@@ -10,6 +11,10 @@
 #define YEAR_OF_PLENTY 4
 
 namespace ariel {
+        class Player;  // Forward declaration
+            class Road;  // Forward declaration
+
+
     class DevelopmentCard {
     private:
         int type;
@@ -24,13 +29,12 @@ namespace ariel {
         void setPlayerID(int PlayerID) ; 
         int getPlayerID()const;  
 
-        std::string getTypeName() const;
         bool isUsed() const;
         void setUsedTrue();
-        int useDevelopmentCard();
-        int useDevelopmentCard(Player p,std::string res1,std::string res2);
-        int useDevelopmentCard(Catan a,Player p,std::string res1);
-        int useDevelopmentCard(Player p,Road r1 , Road r2){
+        void useDevelopmentCard();
+        void useDevelopmentCard(Player& p,std::string res1,std::string res2);
+        void useDevelopmentCard(std::vector<ariel::Player> players,Player& p,std::string res1);
+        void useDevelopmentCard(Player& p,Road r1 , Road r2);
 
         bool checkIfValidRes(std::string res);
 

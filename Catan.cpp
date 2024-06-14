@@ -23,8 +23,9 @@ namespace ariel{
             this->players[2] =p3;
             this->players[2].set_id(2);
 
-            this->turn=0;
-            this->b =  Board();
+            this->turn=-1;
+            this->winner=-1;
+            this->b = Board();
 
         }
 
@@ -34,11 +35,38 @@ namespace ariel{
         void Catan::ChooseStartingPlayer() 
         {
             std::cout<< this->players[0].get_name() << " is starting the game" <<std::endl;
+            this->turn=this->players[0].get_id();
+
+        }
+        void Catan::setTurn(int turn)
+        {
+            turn=turn;
+        }
+        int Catan::getTurn()
+        {
+            return turn;
+        }
+
+        void Catan::nextTurn() 
+        {
+            if(getTurn()+1==(get_players().size()))
+            {
+                turn=get_players()[0].get_id();
+            }
+            else{
+                setTurn(getTurn()+1);
+            }
+
         }
         void Catan::printWinner() 
         {
-            // p1.print();
-            // p1.startTurn();
+            if(checkWinner())
+            {
+                std::cout<< "the winner is" << winner<<std::endl;
+            }
+            else{
+                std::cout<< "no one reach 10 points so no winner" << std::endl;
+            }
         }
         Board Catan::getBoard() 
         {
@@ -49,14 +77,14 @@ namespace ariel{
             int maxKnights = 0;
             int kingPlayerID = -1; // Initialize to an invalid ID
 
-            for (int i = 0; i < this->players.size(); i++)
+            for (int i = 0; i < get_players().size(); i++)
             {
                 int knights = 0;
 
-                for (int j = 0; j < this->players[i].get_developmentCards().size(); j++)
+                for (int j = 0; j < get_players()[i].get_developmentCards().size(); j++)
                 {
-                    if (this->players[i].get_developmentCards()[j].getType() == 0    // Assuming type 0 represents knight cards
-                        && this->players[i].get_developmentCards()[j].isUsed())
+                    if (get_players()[i].get_developmentCards()[j].getType() == 0    // Assuming type 0 represents knight cards
+                        && get_players()[i].get_developmentCards()[j].isUsed())
                     {
                         knights++;
                     }
@@ -65,30 +93,37 @@ namespace ariel{
                 if (knights >= 3 && knights > maxKnights)
                 {
                     maxKnights = knights;
-                    kingPlayerID = this->players[i].get_id();
+                    kingPlayerID = get_players()[i].get_id();
                 }
             }
 
             // Update the kingOfKnights and kingPlayerID if a player has more used knight cards
-            if (maxKnights > this->kingOfKnightsCount)
+            if (maxKnights > kingOfKnightsCount)
             {
-                this->kingOfKnightsCount = maxKnights;
-                this->kingOfKnightsID = kingPlayerID;
+                kingOfKnightsCount = maxKnights;
+                kingOfKnightsID = kingPlayerID;
             }
-}
+        }
      
-        std::vector<Player> Catan::get_players() 
+        std::vector<Player>& Catan::get_players() 
         {
             return players;
         }
         bool Catan::checkWinner() 
         {
-            for(int i=0;i<this->players.size();i++)
+            for(int i=0;i<get_players().size();i++)
             {
-                if(this->players[0].get_points()>=10)
+                int points=get_players()[i].get_points();
+                if(kingOfKnightsID==get_players()[i].get_id())
+                {
+                    points+=2;
+                }
+
+                if(points>=10)
             
                 {
-                    std::cout<< this->players[0].get_name() << " is the winner" <<std::endl;
+                    std::cout<< get_players()[i].get_name() << " is the winner" <<std::endl;
+                    winner=get_players()[i].get_id();
                     return true;
                 }
             }

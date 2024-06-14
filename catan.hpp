@@ -8,17 +8,20 @@
 namespace ariel
 {
 
-   
+       class Player;  // Forward declaration
+    class Board;  // Forward declaration
+
 
     class Catan 
         {
 
         private:
             //constructors
-            Board b;
-            int turn;
-            int kingOfKnightsCount,kingOfKnightsID;
-            std::vector<Player> players;
+            static Board b;
+            static int turn;
+            static int winner;
+            static int kingOfKnightsCount,kingOfKnightsID;
+            static std::vector<Player> players;
         public:
             Catan(Player& p1,Player& p2,Player& p3);
             Catan();
@@ -29,13 +32,16 @@ namespace ariel
             std::string get_name() const;
             void ChooseStartingPlayer() ;
              void printWinner() ;
-            void checkLongestRoad();
-            void checkKingOfKnights();
-            int calculateRoads(Player p);
-             Board getBoard(); 
-             std::vector<Player> get_players()  ;
-            void updateResourcesOfPlayers(int diceNumber);
-             bool checkWinner() ;
+            //void checkLongestRoad();
+            static void checkKingOfKnights();
+            //int calculateRoads(Player p);
+             static Board getBoard(); 
+            static int getTurn(); 
+            static void setTurn(int turn); 
+            static std::vector<Player>& get_players()  ;
+            static void updateResourcesOfPlayers(int diceNumber);
+             static bool checkWinner() ;
+            static void nextTurn() ;
 
 
 
