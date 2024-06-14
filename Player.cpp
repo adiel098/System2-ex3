@@ -1,9 +1,10 @@
-#include "player.hpp"
+#include "Player.hpp"
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <map>
+#include "board.hpp"
 
 
 
@@ -23,8 +24,9 @@ namespace ariel{
             this->resources["wool"] = 0;
             this->resources["Ore"] = 0;
             this->resources["wheat"] = 0;
-
+            
             myturn=0;
+
 
         
         }
@@ -38,6 +40,26 @@ namespace ariel{
     {
         return points;
     }
+    void Player::add_points(int points)
+    {
+        this->points+=points;
+    }
+
+    void Player::set_id(int id) 
+    {
+        this->id=id;
+    }
+    
+
+    int Player::get_id() const
+    {
+        return id;
+    }
+    std::vector<DevelopmentCard>& Player::get_developmentCards()
+    {
+        return developmentCards;
+    }
+
     std::string Player::print() const
     {
         return name;
@@ -50,7 +72,25 @@ namespace ariel{
     {
         myturn=0;
     }
-    std::map<std::string, int>Player::get_resources() 
+    void Player::trade(Player p,std::map<std::string, int> give , std::map<std::string, int> get) 
+    {
+       
+        if(canAffordAndBuy(p.get_resources(),get)&&canAffordAndBuy(get_resources(),give))
+        {
+            reduceResources(give);
+            increaseResources(get);
+            p.reduceResources(get);
+            p.increaseResources(give);
+            std::cout<< "trade success" << std::endl;
+
+        }
+        else{
+            std::cout<< "trade failed" << std::endl;
+
+        }
+
+    }
+    std::map<std::string, int> &Player::get_resources() 
     {
         return resources;
     }
@@ -70,6 +110,36 @@ namespace ariel{
             resources[resourceName] -= requiredAmount;
         }
     }
+    void Player::addResources(std::string res, int amount)
+    {
+        this->get_resources()[res]+=amount;
+    }
+    void Player::removeResources(std::string res, int amount)
+    {
+        this->get_resources()[res]-=amount;
+    }
+
+    void Player::increaseResources(std::map<std::string, int>& price)
+
+    {
+        for (const auto& item : price) 
+        {
+            const std::string& resourceName = item.first;
+            int requiredAmount = item.second;
+            resources[resourceName] += requiredAmount;
+        }
+    }
+    void Player::useKnight()
+    {
+        
+    }
+
+    {
+        for(int i =0;i<get_developmentCards().size();i++)
+        {
+            if(get_developmentCards()[i].get)
+        }
+    }
     void Player::buyDevelopmentCard() 
     {
         std::map<std::string, int> price;
@@ -80,13 +150,23 @@ namespace ariel{
         if(canAffordAndBuy(res,price))
         {
             reduceResources(price);
+            DevelopmentCard d=Board::getDevelopmentCard(get_id());
+            if(d.getType()==1)//check if victory point
+            {
+                d.setUsedTrue();
+                this->add_points(1);
+            }
+            developmentCards.push_back(d);
         }
     }
-     void Player::placeRoad() 
+     void Player::placeRoad(int x1,int y1, int x2, int y2) 
     {
-        
+       
+            Board::add_road(get_id(),x1,y1,x2,y2);
     }
-    void Player::buySettlement() 
+        
+    
+    void Player::buySettlement(int x,int y) 
     {
         std::map<std::string, int> price;
         price["wool"] = 1;
@@ -97,9 +177,15 @@ namespace ariel{
         if(canAffordAndBuy(res,price))
         {
             reduceResources(price);
+            Board::add_building(get_id(),1,x,y);
         }
     }
-    void Player::buyTown() 
+    
+    void Player::placeSettlement(int x,int y) 
+    {
+        Board::add_building(get_id(),1,x,y);
+    }
+    void Player::buyTown(int x,int y) 
     {
         std::map<std::string, int> price;
         price["ore"] = 3;
@@ -108,17 +194,21 @@ namespace ariel{
         if(canAffordAndBuy(res,price))
         {
             reduceResources(price);
+            Board::upgrade_building(get_id(),2,x,y);
         }    
     }
-      void Player::buyRoad() 
+      void Player::buyRoad(int x1,int y1, int x2, int y2) 
     {
-        std::map<std::string, int> price;
+         std::map<std::string, int> price;
         price["wood"] = 1;
         price["brick"] = 1;
         std::map<std::string, int> res=get_resources();
+
         if(canAffordAndBuy(res,price))
         {
             reduceResources(price);
+            Board::add_road(get_id(),x1,y1,x2,y2);
+
         }
     }
     void Player::printPoints() 

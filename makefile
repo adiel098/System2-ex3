@@ -1,38 +1,42 @@
-CXX=g++
-CXXFLAGS=-std=c++11 -g 
-VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
+CXX = g++
+CXXFLAGS = -std=c++11 -g -Wall
 
-SOURCES=Catan.cpp Player.cpp Board.cpp 
-OBJECTS=$(subst .cpp,.o,$(SOURCES))
+SRCS = Board.cpp Catan.cpp Tile.cpp Road.cpp Player.cpp Building.cpp DevelopmentCard.cpp 
+HDRS = Board.hpp catan.hpp Tile.hpp Road.hpp Player.hpp Building.hpp DevelopmentCard.hpp 
 
-run: demo
-	./$^
+TESTSOURCES = TestCounter.cpp Test.cpp
+TESTOBJS = $(TESTSOURCES:.cpp=.o)
 
-demo: Demo.o Player.o Catan.o Board.o
-	$(CXX) $(CXXFLAGS) $^ -o demo -lstdc++
+OBJS = $(SRCS:.cpp=.o)
 
-# test: TestCounter.o Test.o $(OBJECTS)
-# 	$(CXX) $(CXXFLAGS) $^ -o test -lstdc++ -lm
+TARGET = catan
+TESTTARGET = test
 
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+
+$(TESTTARGET): $(TESTOBJS) $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TESTTARGET) $(TESTOBJS) $(filter-out Catan.o, $(OBJS))
+
+%.o: %.cpp $(HDRS)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# tidy:
+# 	clang-tidy $(SRCS) $(HDRS) -- $(CXXFLAGS)
 tidy:
-	clang-tidy $(SOURCES) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
+	clang-tidy $(SRCS) $(HDRS) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
 
-valgrind: demo 
-	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo 2>&1 | { egrep "lost| at " || true; }
-
-Demo.o: Demo.cpp Catan.hpp Player.hpp Board.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-
-Catan.o: Catan.cpp Catan.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-Player.o: Player.cpp Player.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-Board.o: Board.cpp Board.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
+# valgrind: $(TARGET) $(TESTTARGET)
+# 	valgrind --leak-check=full --track-origins=yes --log-file=valgrind-report.txt ./$(TARGET)
+# 	valgrind --leak-check=full --track-origins=yes --log-file=valgrind-test-report.txt ./$(TESTTARGET)
+valgrind: $(TARGET) 
+	valgrind --leak-check=full --track-origins=yes --log-file=valgrind-report.txt ./$(TARGET)
 
 clean:
-	rm -f *.o demo 
+	rm -f $(OBJS) $(TARGET) $(TESTOBJS) $(TESTTARGET) valgrind-report.txt valgrind-test-report.txt
+
+distclean: clean
+
+.PHONY: all clean distclean
