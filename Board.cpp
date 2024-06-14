@@ -1,224 +1,73 @@
 #include "board.hpp"
+#include "Tile.hpp"
+#include "Road.hpp"
+
+#include "DevelopmentCard.hpp"
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <map>
 #include <vector>
 #include <random>
-#include "../../../../../usr/include/c++/11/bits/algorithmfwd.h"
+#include "Building.hpp"
+#include "Building.hpp" 
 
 
 namespace ariel{
 
-
         
-        Settlement::Settlement() 
-            {}
-
-            Settlement::Settlement(int type, int playerID,int x,int y)
-            {
-                this->type =type;
-                this->playerID=playerID;
-                this->x=x;
-                this->y=y;
-            }
-            bool Settlement::validSettlement(Board b,int playerID,int type,int x,int y)
-            {
-                if(Board::isXYInBoard(x,y))//check if location is on board
-                {
-                    bool flag=false;
-                    Road r;
-                    for (const auto& set : b.get_settlements()) {//if setlement already exist on same location
-                            if (set.get_x() == x&&set.get_y() == y )
-                            {return false;}
-                    }
-                    if(type==0)//if its simple setlement
-                    {
-                        if(b.get_settlements_by_id(playerID).size()>=5)///check if player have already 5 setlements ( this the limit)
-                        {
-                            return false;
-                        }
-                    }
-                    for (const auto& road : b.get_roads_by_id(playerID)) {
-                            if (road.get_x2() == x&&road.get_y2() == y )
-                            {
-                                flag= true;
-                                r=road;
-                            }
-                    }
-                    if(flag)
-                    {
-                        for (const auto& road : b.get_roads_by_id(playerID)) //check if there is a two roads 1 by 1 to the settlement
-                        {
-                            if (road.get_x2() == r.get_x1()&&road.get_y2() == r.get_y1() )
-                            {return true;}
-                         }
-
-                    }
-                }
-                return false;
-                    
-        }
-
-
-
-        Tile::Tile() 
-            {}
-
-            Tile::Tile(std::string type,std::string resource,std::vector<std::pair<int, int>> cornersXY, int data)
-            {
-                this->type =type;
-                this->resource=resource;
-                this->cornersXY=cornersXY;
-                this->data =data;
-            }
-        Road::Road() 
-            {}
-
-            Road::Road(int playerID,int x1,int y1, int x2, int y2)
-            {
-                this->playerID=playerID;
-                this->x1=x1;
-                this->y1=y1;
-                this->x2=x2;
-                this->y2=y2;
-
-            } 
-            int Road::get_x1() const
-            {
-                return x1;
-            } 
-            int Road::get_x2() const
-            {
-                return x2;
-            } 
-            int Road::get_y1() const
-            {
-                return y1;
-            } 
-            int Road::get_y2() const
-            {
-                return y2;
-            } 
-            void Road::setRoad(Board b,int playerID,int x1,int y1,int x2,int y2) 
-            {
-                if(Board::isXYInBoard(x1,y1)&&Board::isXYInBoard(x2,y2))
-                {
-
-                }
-            }
-            bool Road::validRoad(Board b,int playerID,int x1,int y1,int x2,int y2)
-            {
-                if(Board::isXYInBoard(x1,y1)&&Board::isXYInBoard(x2,y2))//if the road on the board
-                {
-                Road r=Road(playerID, x1,y1, x2, y2);
-                for (const auto& road : b.get_roads()) {//if already road in same location
-                        if (road == r) 
-                        {return false;}
-                }
-                for (const auto& set :b.get_settlements() ) {
-                        if (set.get_x ()== x1&&set.get_y ()== y1&&set.get_playerID()!=playerID) //if the road continues a settlemnet of other player
-                        {return false;}
-                }
-                for (const auto& road : b.get_roads_by_id(playerID)) {
-                        if (road.get_x2() ==x1&&road.get_y2()==y1) //if the road not continues other road
-                        {return true;}
-                }
-                 for (const auto& set :b.get_settlements_by_id(playerID) ) {
-                        if (set.get_x ()== x1&&set.get_y ()== y1) //if the road continues a settlemnet 
-                        {return true;}
-                }
-                }
-                return false;
-
-            }
-            bool Road::operator==(Road& other)const
-            {
-                return(this->get_x1()==other.get_x1()&&this->get_x2()==other.get_x2()&&this->get_y1()==other.get_y1()&&this->get_y2()==other.get_y2());
-            }
-
-            
-        DevelopmentCard::DevelopmentCard() 
-            {}
-
-            DevelopmentCard::DevelopmentCard(std::string type)
-            {
-                this->type =type;
-                this->used=false;
-
-            }
             
         Board::Board() 
         {
 
-            int size;
-            std::vector<Tile> tiles;
-
-            std::vector<Settlement> settlements;
-            std::vector<Road> roads;
-            std::vector<DevelopmentCard> developmentCards=std::vector<DevelopmentCard> (25);
-            initializeBoard(tiles,settlements,roads,developmentCards);
-
+            
+            initializeBoard(tiles,buildings,roads,developmentCards);
+          
 
         }
-          std::vector<Tile> Board::get_tiles() const
+          std::vector<Tile*>& Board::get_tiles() 
         {
             return tiles;
     
         }
-        std::vector<Road> Board::get_roads() const
+         std::vector<Road>& Board::get_roads() 
         {
             return roads;
     
         }
-        std::vector<Settlement> Board::get_settlements() const
+        std::vector<Building>& Board:: get_buildings() 
         {
-            return settlements;
+            return buildings;
     
         }
-         std::vector<DevelopmentCard> Board::get_developmentCards() const
+         std::vector<DevelopmentCard>& Board::get_developmentCards() 
         {
             return developmentCards;
     
         }
+        DevelopmentCard& Board::getDevelopmentCard(int id)
+        {
+            for (size_t i=0;i<25;i++)
+            {
+                if(!(get_developmentCards()[i].isUsed()&&get_developmentCards()[i].getPlayerID()==-1))
+                {
+                    DevelopmentCard d=get_developmentCards()[i];
+                    d.setPlayerID(id);
+                    return d;
+                }
+            }
+                throw std::runtime_error("No unused DevelopmentCard found in the vector");
+        }
 
        
-        std::string Tile::get_resource() const
+        
+        
+        std::vector<Building>& Board::get_buildings_by_id(int playerID) 
         {
-            return resource;
-    
-        }
-        std::vector<std::pair<int, int>> Tile::get_cornersXY() const
-        {
-            return cornersXY;
-    
-        }
-        int Settlement::get_type() const
-        {
-            return type;
-    
-        }
-        int Settlement::get_playerID() const
-        {
-            return playerID;
-    
-        }
-        int Settlement::get_x() const
-        {
-            return x;
-    
-        }
-        int Settlement::get_y() const
-        {
-            return y;
-    
-        }
-        std::vector<Settlement> Board::get_settlements_by_id(int playerID) const
-        {
-            std::vector<Settlement> playerSettlements;
-            int i=0;
-            for (const auto& set : get_settlements()) {
-            if (set.get_playerID() == playerID) {
+            std::vector<Building> playerSettlements;
+            size_t i=0;
+            for (const auto& set : get_buildings()) {
+            if (set.getPlayerID() == playerID) {
                 playerSettlements[i]=(set);
                 i++;
             }
@@ -226,10 +75,10 @@ namespace ariel{
     
         }
         }
-        std::vector<Road> Board::get_roads_by_id(int playerID) const
+        std::vector<Road>& Board::get_roads_by_id(int playerID) 
         {
             std::vector<Road> playerRoads;
-            int i=0;
+            size_t i=0;
             for (const auto& set : get_roads()) {
             if (set.get_playerID() == playerID) {
                 playerRoads[i]=(set);
@@ -239,27 +88,26 @@ namespace ariel{
     
         }
         }
-        void Board::initializeBoard(std::vector<Tile>&tiles,std::vector<Settlement>& settlements, std::vector<Road>& roads,std::vector<DevelopmentCard>& developmentCards) 
+        void Board::initializeBoard(std::vector<Tile*>&tiles,std::vector<Building>& buildings, std::vector<Road>& roads, std::vector<DevelopmentCard>& developmentCards) 
         {
             // Add Knight cards
-            developmentCards.resize(14);
-            for (int i = 0; i < 14; ++i) {
-                developmentCards[i]=(DevelopmentCard("Knight"));
+            for (size_t i = 0; i < 14; ++i) {
+                developmentCards[i]=DevelopmentCard(0);  
             }
 
             // Add Victory Point cards
-            for (int i = 14; i < 19; ++i) {
-                developmentCards[i]=(DevelopmentCard("VictoryPoint"));     
+            for (size_t i = 14; i < 19; ++i) {
+                developmentCards[i]=DevelopmentCard(1);     
                        }
 
             // Add Progress cards
             
-            developmentCards[19]=(DevelopmentCard("2Ways"));
-            developmentCards[20]=(DevelopmentCard("2Ways"));
-            developmentCards[21]=(DevelopmentCard("Monopol"));
-            developmentCards[22]=(DevelopmentCard("Monopol"));
-            developmentCards[23]=(DevelopmentCard("2Cards"));
-            developmentCards[24]=(DevelopmentCard("2Cards"));
+            developmentCards[19]=(DevelopmentCard(2));
+            developmentCards[20]=DevelopmentCard(2);
+            developmentCards[21]=DevelopmentCard(3);
+            developmentCards[21]=DevelopmentCard(3);
+            developmentCards[23]=DevelopmentCard(4);
+            developmentCards[24]=DevelopmentCard(4);
             
 
             std::vector<std::vector<std::string>> resourceTypes = {
@@ -322,11 +170,12 @@ namespace ariel{
         size_t index = 0;
         for (size_t i = 0; i < tiles.size(); ++i) {
                 if (resourceTypes[index][0] != "Desert") {
-                    tiles[i] = Tile(resourceTypes[index][0],resourceTypes[index][1],cornersXY[index] ,numberTokens[index]);
+                    tiles[i]=(TileFactory::createTile(resourceTypes[index][0],resourceTypes[index][1],cornersXY[i],numberTokens[index]));
+
                     ++index;
                 } else {
                     // If it's a desert tile, set the number token to 0
-                    tiles[i] = Tile("Desert","desert",cornersXY[index], 0);
+                    tiles[i]=(TileFactory::createTile("Desert","desert",cornersXY[index], 0));
                 }
             
         }
@@ -368,7 +217,194 @@ namespace ariel{
         }
         return false;
         }
+        void Board::add_road(int playerID,int x1,int y1, int x2 , int y2)
+        {
+           
+                    if(validRoad( playerID, x1,y1, x2,y2))
+                    {
+                     Road r=Road(playerID,x1,y1,x2,y2);
+                     get_roads().push_back(r);
+                    }
+                
+            
+
+        }
         
+        void Board::upgrade_building(int playerID,int type,int x,int y)
+        {
+            for(int i=0;i<get_buildings_by_id(playerID).size();i++)
+            {
+                if(get_buildings_by_id(playerID)[i].getX()==x&&get_buildings_by_id(playerID)[i].getY()&&get_buildings_by_id(playerID)[i].getType()==1)
+                {
+                    get_buildings_by_id(playerID)[i].setType();
+                }
+
+            }
+        }
+
+        void Board::add_building(int playerID,int type,int x,int y)
+        {
+            
+                    if(validBuilding( playerID,type, x,y))
+                    {
+                     
+                        Building b= Building(playerID,type, x,y);
+                     
+                        get_buildings().push_back(b);
+                    }
+                
+            
+
+        }
+        bool Board::validRoad(int playerID,int x1,int y1,int x2,int y2)
+            {
+                if(isXYInBoard(x1,y1)&&isXYInBoard(x2,y2))//if the road on the board
+                {
+                    Road r=Road(playerID, x1,y1, x2, y2);
+                    for (const auto& road : get_roads()) {//if already road in same location
+                            if (road == r) 
+                            {return false;}
+                    }
+                    for (const auto& set :get_buildings() ) {
+                            if (set.getX ()== x1&&set.getX ()== y1&&set.getPlayerID()!=playerID) //if the road continues a settlemnet of other player
+                            {return false;}
+                    }
+                    for (const auto& road : get_roads_by_id(playerID)) {
+                            if (road.get_x2() ==x1&&road.get_y2()==y1) //if the road not continues other road
+                            {return true;}
+                    }
+                    for (const auto& set :get_buildings_by_id(playerID) ) {
+                            if (set.getX ()== x1&&set.getY()== y1) //if the road continues a settlemnet 
+                            {return true;}
+                    }
+                }
+                return false;
+
+            }
+        bool Board::validBuilding(int playerID,int type,int x,int y)
+            {
+                if(isXYInBoard(x,y))//if the road on the board
+                {
+                    bool flag=false;
+                    Road r;
+                    for (const auto& set : get_buildings()) {//if setlement already exist on same location
+                            if (set.getX() == x&&set.getY() == y )
+                            {return false;}
+                    }
+                    if(type==0)//if its simple setlement
+                    {
+                        if(get_buildings_by_id(playerID).size()<2)//check if its start of game
+                        {
+                            if(isXYInBoard(x-1,y+1)) // check if there another build closer less than 1 road
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x-1&&b.getY()==y+1)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x+1,y+1))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x+1&&b.getY()==y+1)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x-1,y-1))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x-1&&b.getY()==y-1)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x+1,y-1))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x+1&&b.getY()==y-1)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x,y-1))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x&&b.getY()==y-1)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x,y+1))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x&&b.getY()==y+1)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x-1,y))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x-1&&b.getY()==y)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if(isXYInBoard(x+1,y))
+                            {
+                                for (const auto& b : get_buildings())
+                                {
+                                    if(b.getX()==x+1&&b.getY()==y)
+                                    {
+                                        return false;
+                                    }
+                                }
+                            }
+                            return true;
+                                
+                        }
+                        if(get_buildings_by_id(playerID).size()>=5)///check if player have already 5 setlements ( this the limit)
+                        {
+                            return false;
+                        }
+                    }
+                    for (const auto& road : get_roads_by_id(playerID)) {
+                            if (road.get_x2() == x&&road.get_y2() == y )
+                            {
+                                flag= true;
+                                r=road;
+                            }
+                    }
+                    if(flag)
+                    {
+                        for (const auto& road : get_roads_by_id(playerID)) //check if there is a two roads 1 by 1 to the settlement
+                        {
+                            if (road.get_x2() == r.get_x1()&&road.get_y2() == r.get_y1() )
+                            {return true;}
+                         }
+
+                    }
+                }
+                return false;
+                    
+        } 
+        
+
 
  
 };
