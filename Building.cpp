@@ -13,7 +13,7 @@ ariel::Building::Building(int playerID, int type, int x, int y)
     this->type = type;
     this->playerID = playerID;
     this->x=x;
-    this->x=x;
+    this->y=y;
 }
 
 Building::~Building() {}
@@ -33,13 +33,6 @@ int Building::getY() const {
 }
 
 int Building::getType() const {
-    switch (this->type) {
-        case SETTLEMENT:
-            return 1;
-        case CITY:
-            return 2;
-       
-        default:
-            return 0;
-    }
+    return type;
+    
 }

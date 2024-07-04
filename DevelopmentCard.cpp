@@ -2,7 +2,7 @@
 #include "DevelopmentCard.hpp"
 
 #include <iostream>
-#include "catan.hpp"
+#include "Catan.hpp"
 #include "Player.hpp"
 
 using namespace ariel;
@@ -23,9 +23,9 @@ int DevelopmentCard::getPlayerID() const {
 
     return playerID;
 }
-void DevelopmentCard::setPlayerID(int PlayerID)  {
+void DevelopmentCard::setPlayerID(int id)  {
 
-    this-> playerID=playerID;
+    this-> playerID=id;
 }
 
 bool DevelopmentCard::isUsed() const {

@@ -1,6 +1,6 @@
 //id: 207988213 email:haleviadiel@gmail.com
 #include "Road.hpp"
-#include "board.hpp"
+#include "Board.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -36,7 +36,11 @@ namespace ariel{
             {
                 return y2;
             } 
-            
+            int Road::get_playerID() const
+            {
+                return playerID;
+            }
+
       
             bool Road::operator==(Road& other)const
             {

@@ -1,6 +1,6 @@
 //id: 207988213 email:haleviadiel@gmail.com
 #include "Player.hpp"
-#include "catan.hpp"
+#include "Catan.hpp"
 #ifndef DEVELOPMENTCARD_HPP
 #define DEVELOPMENTCARD_HPP
 

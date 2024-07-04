@@ -2,7 +2,7 @@
 #ifndef ROAD_HPP
 #define ROAD_HPP
 #include <string>
-#include "board.hpp"
+#include "Board.hpp"
 
 
 namespace ariel

@@ -7,13 +7,18 @@
 #include <iostream>
 
 #include <string>
-
+#define AgriculturalLand 0
+#define Mountains 1
+#define PastureLand 2
+#define Forest 3
+#define Hills 4
+namespace ariel {
 
 class Tile {
 public:
-    virtual void play() = 0;
-    virtual ~Tile() = default;
-    std::string resource;
+        ~Tile();
+        Tile(std::string tileType ,std::string resource ,std::vector<std::pair<int, int>>&  cornersXY ,int data);
+    std::string resource,type;
     std::vector<std::pair<int, int>>  cornersXY;
     int data;
     std::string get_resource() const;
@@ -23,35 +28,6 @@ public:
 
 };
 
-class AgriculturalLandTile : public Tile {
-public:
-    void play() override;
-};
-
-class MountainsTile : public Tile {
-public:
-    void play() override;
-};
-class PastureLandTile : public Tile {
-public:
-    void play() override;
-};
-class ForestTile : public Tile {
-public:
-    void play() override;
-};
-class HillsTile : public Tile {
-public:
-    void play() override;
-};
-class DesertTile : public Tile {
-public:
-    void play() override;
-};
-
-class TileFactory {
-public:
-    static Tile* createTile(const std::string& tileType ,std::string resource ,std::vector<std::pair<int, int>>&  cornersXY ,int data);
-};
+}
 
 #endif // TILE_HPP
