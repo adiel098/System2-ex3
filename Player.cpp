@@ -71,7 +71,6 @@ namespace ariel {
 
         game->checkKingOfKnights(); // Use the game instance
         game->calculateAndUpdatePoints();
-        std::cout << name<< " roll dice and result = " <<std::endl;
 
         this->cardIsUsed=false;
         try {
@@ -87,7 +86,7 @@ namespace ariel {
 
 
     }
-        void Player::trade(Player p, std::map<std::string, int> give, std::map<std::string, int> get)
+        bool Player::trade(Player p, std::map<std::string, int> give, std::map<std::string, int> get)
         {
         isYourTurn();
         if (canAffordAndBuy(game->getPlayer(p.get_id()).get_resources(), get) && canAffordAndBuy(game->getPlayer(id).get_resources(), give)) 
@@ -107,11 +106,13 @@ namespace ariel {
                 std::cout << item.first << " (" << item.second << "), ";
             }
             std::cout << std::endl;
+            return true;
         } 
         else 
         {
             std::cout << "Trade failed between " << this->get_name() << " and " << p.get_name() << std::endl;
             std::cout << "Insufficient resources for the trade." << std::endl;
+            return false;
         }
 }
 

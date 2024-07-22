@@ -32,27 +32,27 @@ int main()
   // Player 1's turn
 
 
-    //should success
+    //Add settlements and roads for free, first round , should success.
     p1.placeSettlement(4, 1);
     p1.placeRoad(4, 1, 5, 0);
     p1.placeSettlement(6, 0);
     p1.placeRoad(6, 0, 7, 1); 
+
+    //add some resources for testing
     p1.addResources("wood",500);
     p1.addResources("wheat",500);
     p1.addResources("wool",500);
     p1.addResources("brick",500);
     p1.addResources("ore",500);
+
     //try to place more than 2 roads/settlements
     p1.placeSettlement(2, 2);
     p1.placeRoad(2, 2, 3, 1);
     
-
+    //check that resources after bought
     p1.printResources();
 
-    p1.addResources("ore",3);
-    p1.addResources("wood",5);
-
-    p1.printResources();
+    //buy some developments cards
     p1.buyDevelopmentCard();//buy knight
     p1.buyDevelopmentCard();//buy knight
     p1.buyDevelopmentCard();//buy knight
@@ -63,21 +63,23 @@ int main()
 
 
    
-
+    // what cards p1 bought
     std::cout<<game.get_players()[0].get_player_cards().size()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[0]->getType()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[1]->getType()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[2]->getType()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[3]->getType()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[4]->getType()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[5]->getType()<<std::endl;
-    std::cout<<game.get_players()[0].get_player_cards()[6]->getType()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[0]->getTypeName()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[1]->getTypeName()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[2]->getTypeName()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[3]->getTypeName()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[4]->getTypeName()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[5]->getTypeName()<<std::endl;
+    std::cout<<game.get_players()[0].get_player_cards()[6]->getTypeName()<<std::endl;
 
-   
-
+  
     p1.endTurn();
 
     // Player 2's turn
+
+    //Add settlements and roads for free, first round , should success.
+
     p2.placeSettlement(3, 3);
     p2.placeRoad(3, 3, 3, 5);
     p2.placeSettlement(0, 5);
@@ -121,11 +123,6 @@ int main()
     p1.rollDice();
     p1.rollDice();
 
-    p1.addResources("wood",500);
-    p1.addResources("wheat",500);
-    p1.addResources("wool",500);
-    p1.addResources("brick",500);
-    p1.addResources("ore",500);
     p1.buySettlement(8,1); // will fail cause not road connected
 
     p1.buyRoad(7, 1, 8, 1); //  buy road so now 2 road in row
@@ -151,29 +148,35 @@ int main()
 
   
 
-    p1.useKnight();
+    p1.useKnight();//will work, p1 have knight card and this first card using that turn.
     p1.useKnight();//will not work already used develop card
 
 
+    //check resources amount before using monopoly
     p1.printResources();
     p2.printResources();
     p3.printResources();
+
     p1.useMonopoly("wool");
+
+
+    //to check after monopoly reduce
     p1.printResources();
     p2.printResources();
     p3.printResources();
 
-
+    //using YEAR OR PLENTY card
     p1.useYearOfPlenty("wool","wood");
     p1.printResources();
 
     p1.useYearOfPlenty("wool","wood");//dont have card
 
-
+    //create two roards
     Road r1= Road(p1.get_id(),1,1,2,2);
     Road r2= Road(p1.get_id(),1,1,2,2);
 
     p1.useTwoFreeRoads(r1,r2);//should not work wrong locations
+
     p1.useKnight();
     p1.endTurn();
 
@@ -183,6 +186,8 @@ int main()
     p2.printResources();
     p2.endTurn();
 
+    p3.rollDice();
+
     // Player 3's additional settlements and roads
     p3.placeSettlement(6, 8);
     p3.placeRoad(6, 8, 7, 7);
@@ -191,12 +196,16 @@ int main()
     p3.endTurn();
     p1.useKnight();//use the second time
 
+    //just pass to p1 turn
     p1.endTurn();
+    p2.rollDice();
     p2.endTurn();
+    p3.rollDice();
     p3.endTurn();
 
-    p1.useKnight();//use the third time
-    
+    p1.useKnight();//use the third time knigh card, should get big army
+    p1.rollDice();
+
     p1.endTurn();
 
 

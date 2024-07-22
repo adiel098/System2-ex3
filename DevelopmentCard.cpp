@@ -19,6 +19,30 @@ int DevelopmentCard::getType() const {
 
     return type;
 }
+std::string DevelopmentCard::getTypeName() const {
+
+    if(type==0)
+    {
+        return "Knight";
+    }
+    if(type==1)
+    {
+        return "Victory Point";
+    }
+    if(type==2)
+    {
+        return "Road Building";
+    }
+    if(type==3)
+    {
+        return "Monopoly";
+    }
+    if(type==4)
+    {
+        return "Year of plenty";
+    }
+    return "";
+}
 int DevelopmentCard::getPlayerID() const {
 
     return playerID;

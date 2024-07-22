@@ -27,6 +27,7 @@ namespace ariel {
         DevelopmentCard(int type);
 
         int getType() const;
+        std::string getTypeName() const;
         void setPlayerID(int PlayerID) ; 
         int getPlayerID()const;  
 

@@ -37,7 +37,7 @@ namespace ariel {
         std::string print() const;
         int rollDice();
         void endTurn();
-        void trade(Player p, std::map<std::string, int> give, std::map<std::string, int> get);
+        bool trade(Player p, std::map<std::string, int> give, std::map<std::string, int> get);
         std::map<std::string, int>& get_resources();
         void updateResources(const std::string& resource, const int amount);
         void reduceResources(std::map<std::string, int>& price);
